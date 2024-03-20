@@ -10,6 +10,12 @@ local DataTypes = {
     ["Inventory"] = {}
 }
 
+-- 
+local RStorage = game:GetService("ReplicatedStorage")
+
+--
+local RE = RStorage:WaitForChild("RemoteEvent")
+
 function DataHandler.Init(plr)
     DataHandler["Players"][plr] = {}
 
@@ -30,12 +36,20 @@ function DataHandler.AddData(plr, type, increment)
     local data = DataHandler["Players"][plr]
 
     data[type] = data[type] + increment
+    UpdateClientData(plr)
 end
 
 function DataHandler.SetData(plr, type, value)
     local data = DataHandler["Players"][plr]
 
     data[type] = value
+    UpdateClientData(plr)
+end
+
+function UpdateClientData(plr)
+    local data = DataHandler["Players"][plr]
+
+    RE:FireClient(plr, {["ModuleScript"] = "PlayerData", ["Function"] = "UpdateData", ["Data"] = data})
 end
 
 

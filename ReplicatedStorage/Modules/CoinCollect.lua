@@ -4,10 +4,21 @@ local CoinCollect = {}
 local CollectionService = game:GetService("CollectionService")
 local RStorage = game:GetService("ReplicatedStorage")
 
+-- Modules
+local Modules = RStorage:WaitForChild("Modules")
+
+local PlayerData = require(Modules.PlayerData)
+
+--
 local plr = game.Players.LocalPlayer
 
 --
 local RE = RStorage:WaitForChild("RemoteEvent")
+local RF = RStorage:WaitForChild("RemoteFunction")
+
+-- Properties
+local cooldown = 0.1;
+
 
 function CoinCollect.Init()
     -- Start periodically checking for coins within range
@@ -18,14 +29,18 @@ function CoinCollect.Init()
     end)
 
     local params = createParam()
-    local radius = 10
 
-    while task.wait(.1) do
-        if char and char:FindFirstChild("HumanoidRootPart") then
+    while task.wait(cooldown) do
+        if char and char:FindFirstChild("HumanoidRootPart") and PlayerData.Data.Equipped then
+            local radius = PlayerData.Data.Equipped.Range
+
             local coins = workspace:GetPartBoundsInRadius(char.HumanoidRootPart.Position, radius, params)
             
             if #coins > 0 then
-                RE:FireServer({["ModuleScript"] = "CoinHandler", ["Function"] = "Collect", ["Coins"] = coins})
+                cooldown = RF:FireServer({["ModuleScript"] = "CoinHandler", ["Function"] = "Collect", ["Coins"] = coins})
+                if not cooldown then
+                    cooldown = 0.1 -- hopefully wont
+                end
             end
         end
     end

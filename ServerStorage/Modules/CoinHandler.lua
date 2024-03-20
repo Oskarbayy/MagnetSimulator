@@ -23,6 +23,8 @@ local DH = require(sModules.DataHandler)
 
 -- Properties
 local Coins = {}
+local cooldown = 0
+local lastTick = tick()
 
 -- Public Functions --
 function CoinHandler.Init()
@@ -33,9 +35,16 @@ end
 
 -- maybe use a remotefunction and return true / false to make client animations based on return
 function CoinHandler.Collect(plr, args)
+    -- Check cooldown
+    if not (tick() - lastTick >= cooldown) then; return nil; end
+
+    local equipped = DH.GetData(plr, "Equipped")
+    if not equipped then; return nil; end
+
     local coinsToCollect = args["Coins"]
 
     local range = DH.GetData(plr, "Range")
+    local status = false
 
     -- Server Check
     for _, coin in pairs(coinsToCollect) do
@@ -46,8 +55,18 @@ function CoinHandler.Collect(plr, args)
 
             -- Give coins via DataHandler
             DH.AddData(plr, "Coins", 1)
+
+            status = true
         end
     end
+
+    if status then
+        cooldown = 1/(math.random(equipped.Effectiveness*100-25, equipped.Effectiveness*100+25)/100)
+        lastTick = tick()
+        return cooldown
+    end
+
+    return nil
 end
 
 -- Private Functions --

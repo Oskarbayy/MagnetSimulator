@@ -15,12 +15,13 @@ local DH = require(sModules.DataHandler)
 
 function ToolHandler.EquipTool(plr, args)
     -- if owns item then equip it in the datahandler
-    local item = args["item"]
+    local item = args["Item"]
     local inventory = DH.GetData(plr, "Inventory")
 
     if inventory[item] then
         -- Equip Item
         DH.SetData(plr, "Equipped", item)
+        return item
     end
 end
 
