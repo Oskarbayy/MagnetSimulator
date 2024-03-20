@@ -1,0 +1,12 @@
+workspace.SpawnArea
+    Just position and size where coins will spawn under with rays
+
+
+ServerStorage.Models.Coin
+    For 'Coin.Create' method
+
+workspace.Coins
+    Folder for all 'Coin' objects
+
+ReplicatedStorage.RemoteEvent
+ReplicatedStorage.RemoteFunction
