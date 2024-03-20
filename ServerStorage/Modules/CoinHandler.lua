@@ -51,10 +51,8 @@ function CoinHandler.Collect(plr, args)
         local distance = calcDistance(plr, coin)
         
         if range >= distance then
-            coin:Destroy()
-
-            -- Give coins via DataHandler
-            DH.AddData(plr, "Coins", 1)
+            local thread = coroutine.create(CollectCoin)
+            coroutine.resume(thread, plr, coin)
 
             status = true
         end
@@ -70,6 +68,78 @@ function CoinHandler.Collect(plr, args)
 end
 
 -- Private Functions --
+function CollectCoin(plr, coin)
+    local char = plr.Character or plr.CharacterAdded:Wait()
+
+    if not char:FindFirstChild("HumanoidRootPart") then; return; end
+
+    local startPos = coin.Position
+    local targetPos = char.PrimaryPart.Position
+    -- Generate a random control position for each movement
+    local controlPos = getRandomControlPos(startPos, targetPos)
+
+    local t = 0
+    local speed = 0.01 -- Adjust for timing
+
+    local connection; connection = game:GetService("RunService").Heartbeat:Connect(function(deltaTime)
+        -- if char dies or somehow isnt loaded then we dont do the animation
+        -- and just skip to the collect part.
+        if not char or not char:FindFirstChild("HumanoidRootPart") then
+            DH.AddData(plr, "Coins", 1)
+            coin:Destroy()
+            connection:Disconnect()
+        end
+
+        
+        local targetPos = char.PrimaryPart.Position
+
+        t += speed * deltaTime
+        if t > 1 then t = 1 end -- Clamp t to 1 to avoid overshooting
+
+        local newPos = getBezierPoint(t, startPos, controlPos, targetPos)
+        coin.Position = newPos
+
+        if t == 1 then
+            -- reached targetPos
+            -- Give coins via DataHandler
+            DH.AddData(plr, "Coins", 1)
+            coin:Destroy()
+            connection:Disconnect()
+        end
+    end)
+end
+
+function getBezierPoint(t, start, control, target)
+    return (1 - t) ^ 2 * start + 2 * (1 - t) * t * control + t ^ 2 * target
+end
+
+
+function getRandomControlPos(startPos, targetPos)
+    local direction = (targetPos - startPos).Unit  -- Direction from start to target
+    local distance = (targetPos - startPos).Magnitude  -- Distance from start to target
+    
+    -- Base the deviation on the distance, adjusting these factors as needed
+    local lateralDeviationFactor = 0.3  -- Controls lateral deviation
+    local verticalDeviationFactor = 0.5  -- Controls vertical deviation
+    
+    -- Calculate maximum lateral and vertical deviations based on distance
+    local maxLateralDeviation = distance * lateralDeviationFactor
+    local maxVerticalDeviation = distance * verticalDeviationFactor
+
+    -- Randomize deviations within the calculated ranges
+    local lateralDeviation = math.random(-maxLateralDeviation, maxLateralDeviation)
+    local verticalDeviation = math.random(0, maxVerticalDeviation)  -- Keeping it positive to avoid going downwards
+    
+    -- Calculate the control point's position
+    -- For lateral deviation, we need to find a vector perpendicular to the direction of movement
+    local right = Vector3.new(-direction.Z, 0, direction.X)  -- Assuming Y is up, this gives a perpendicular vector in the XZ plane
+    local controlPos = (startPos + targetPos) / 2  -- Start with the midpoint
+    controlPos = controlPos + right * lateralDeviation  -- Apply lateral deviation
+    controlPos = controlPos + Vector3.new(0, verticalDeviation, 0)  -- Apply vertical deviation
+
+    return controlPos
+end
+
 function SpawnLoop()
     -- First spawn all the coins
     local AmountOfCoins = CalcCoinAmount()
