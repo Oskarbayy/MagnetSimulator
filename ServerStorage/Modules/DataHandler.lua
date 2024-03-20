@@ -5,7 +5,9 @@ local DataHandler = {
 local DataTypes = {
     ["Range"] = 10,
     ["Speed"] = 16,
-    ["Coins"] = 0
+    ["Coins"] = 0,
+    ["Equipped"] = nil,
+    ["Inventory"] = {}
 }
 
 function DataHandler.Init(plr)
@@ -28,6 +30,12 @@ function DataHandler.AddData(plr, type, increment)
     local data = DataHandler["Players"][plr]
 
     data[type] = data[type] + increment
+end
+
+function DataHandler.SetData(plr, type, value)
+    local data = DataHandler["Players"][plr]
+
+    data[type] = value
 end
 
 
