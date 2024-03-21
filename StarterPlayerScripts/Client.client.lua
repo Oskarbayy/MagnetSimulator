@@ -5,6 +5,7 @@ local RStorage = game:GetService("ReplicatedStorage")
 local Modules = RStorage:WaitForChild("Modules")
 
 local CoinCollect = require(Modules.CoinCollect)
+local PushHandler = require(Modules.PushHandler)
 
 --
 local RE = RStorage:WaitForChild("RemoteEvent")
@@ -14,6 +15,8 @@ local RF = RStorage:WaitForChild("RemoteFunction")
 local thread = coroutine.create(CoinCollect.Init)
 coroutine.resume(thread)
 
+local thread1 = coroutine.create(PushHandler.Init)
+coroutine.resume(thread1)
 
 -- Setup client events
 

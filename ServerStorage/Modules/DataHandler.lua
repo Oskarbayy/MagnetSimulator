@@ -7,7 +7,8 @@ local DataTypes = {
     ["Speed"] = 16,
     ["Coins"] = 0,
     ["Equipped"] = nil,
-    ["Inventory"] = {}
+    ["Inventory"] = {},
+    ["PVP"] = true,
 }
 
 -- 
@@ -28,8 +29,11 @@ end
 
 function DataHandler.GetData(plr, type)
     local data = DataHandler["Players"][plr]
-
+    if not type then
+        return data
+    end
     return data[type]
+
 end
 
 function DataHandler.AddData(plr, type, increment)

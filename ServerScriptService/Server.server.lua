@@ -10,6 +10,8 @@ local sModules = SStorage:WaitForChild("Modules")
 
 local CoinHandler = require(sModules.CoinHandler)
 local DataHandler = require(sModules.DataHandler)
+local RankHandler = require(sModules.RankHandler)
+local PushHandlerS = require(sModules.PushHandlerS)
 
 --
 local RE = RStorage:WaitForChild("RemoteEvent")
@@ -18,10 +20,16 @@ local RF = RStorage:WaitForChild("RemoteFunction")
 -- Server Just Started
 print("Server Starting...")
 
+PushHandlerS.Init()
+
 -- Setup Player
 print("Setting up Player")
 game.Players.PlayerAdded:Connect(function(plr)
-    DataHandler.Init(plr)
+    local thread1 = coroutine.create(DataHandler.Init())
+	coroutine.resume(thread1, plr)
+
+	local thread1 = coroutine.create(RankHandler.Init())
+	coroutine.resume(thread1, plr)
 end)
 
 -- Start Spawning Coins
