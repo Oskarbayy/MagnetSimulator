@@ -23,7 +23,6 @@ function PetSystem.Init()
     -- Considering using Heartbeat method instead of renderstepped gotta run a test later
     RS.RenderStepped:Connect(function(deltaTime)
         -- update all players pets
-        
         for _,player in pairs(PetSystem["PetsEquipped"]) do
             -- make sure player is still in game
             if Players:FindFirstChild(player.Name) then
@@ -38,12 +37,16 @@ end
 -- function connected from button
 function PetSystem.EquipPet(pet)
     RE:FireServer({
-        ["ModuleScript"] = "PetSystemS", 
-        ["Function"] = "EquipPet", 
+        ["ModuleScript"] = "PetSystemS",
+        ["Function"] = "EquipPet",
         ["Pet"] = pet
     })
-
 end
+
+-- this handles the data when the player leaves
+Players.PlayerRemoving:Connect(function(player)
+    PetSystem["PetsEquipped"][player] = {}
+end)
 
 function PetSystem.UpdatePlayerPets(args)
     local player = args["Player"]
@@ -56,7 +59,12 @@ end
 function AnimatePets(player)
     for _, pet in pairs(PetSystem["PetsEquipped"][player]) do
         local followPosition = getFollowPosition(player, pet)
-        local jumpHeight = updateJump()
+        local jumpHeight = 0
+
+        -- make a check to only make the pets jump if that player is moving
+        if player.Character.Humanoid.MoveDirection.Magnitude > 0 then
+            jumpHeight = updateJump()
+        end
 
         pet.PrimaryPart.Position = followPosition + Vector3.new(0, jumpHeight, 0)
     end
@@ -77,7 +85,6 @@ function updateJump()
 
     return jumpHeight
 end
-
 
 return PetSystem
 
