@@ -32,7 +32,7 @@ function ClientEvent(args) -- Client Remote woooho
 		else
 			ModuleScript.New(args)
 		end
-
+		
 	else
 		print("Client Event didn't pass a ModuleScript!")
 	end

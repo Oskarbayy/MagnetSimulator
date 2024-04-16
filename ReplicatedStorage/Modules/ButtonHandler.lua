@@ -106,9 +106,9 @@ function ButtonHandler:Init()
 					local ModuleScript = button.ModuleScript.Value
 					if Modules:FindFirstChild(ModuleScript) then
 						if button:FindFirstChild("Function") then
-							require(Modules[ModuleScript])[button.Function.Value](button.Name)
+							require(Modules[ModuleScript])[button.Function.Value](button)
 						else
-							require(Modules[ModuleScript])(button.Name)
+							require(Modules[ModuleScript])(button)
 						end
 					else
 						print(ModuleScript, "Doesnt exist in Client Modules Folder")
