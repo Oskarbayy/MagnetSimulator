@@ -47,7 +47,6 @@ end
 
 function PetSystemS.UnEquipPet(plr, args)
     local pet = args["Pet"]
-
     local petsEquipped = DH.GetData(plr, "PetsEquipped")
 
     -- if you have this pet equipped

@@ -1,3 +1,7 @@
+--[[ new Dependencies
+    * Pets in DataHandler should be the table of the pet with all its attributes
+]]
+
 -- Settings --
 local SpawnArea = workspace.SpawnArea
 local Density = 10 -- studs^2 per coin
@@ -140,7 +144,16 @@ function CollectCoin(plr, coin)
     })
 
     task.wait(1)
-    DH.AddData(plr, "Coins", 1)
+
+    local pets = DH.GetData(plr, "PetsEquipped")
+    local coinMultiplier = 1
+    for _, petInfo in pairs(pets) do
+        coinMultiplier = coinMultiplier + (petInfo.CoinMultiplier - 1)
+    end
+
+    local coins = 1 * coinMultiplier
+
+    DH.AddData(plr, "Coins", coins)
     coin:Destroy()
 end
 

@@ -27,7 +27,7 @@ function PetSystem.Init()
             -- make sure player is still in game
             if Players:FindFirstChild(player.Name) then
                 AnimatePets(player)
-
+                
             end
         end
 
