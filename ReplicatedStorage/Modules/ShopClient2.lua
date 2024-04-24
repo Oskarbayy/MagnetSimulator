@@ -43,6 +43,7 @@ end
 table.sort(sortedMagnets, function(a, b)
     return a.Price < b.Price
 end)
+
 --
 
 function ShopClient.Open() 
@@ -67,6 +68,11 @@ function ShopClient.Action(btn)
         local status = RF:InvokeServer({["ModuleScript"] = "ShopHandler", ["Function"] = "BuyItem", ["Item"] = selectedItem})
 
         print(status["Message"])
+
+        -- Update the shop since its bought now?
+        if ShopClient.IsOpen then
+            ShopClient.UpdateUI()
+        end
     elseif btnName == "UnEquip" then
         RE:FireServer({["ModuleScript"] = "ToolHandler", ["Function"] = "UnEquipTool"})
 
